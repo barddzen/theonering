@@ -424,7 +424,6 @@ EOF
 				AA0019 /* Managers */,
 				AA0020 /* Extensions */,
 				AA0021 /* Resources */,
-				AA0009 /* Info.plist */,
 			);
 			path = $APP_NAME;
 			sourceTree = "<group>";
@@ -442,6 +441,7 @@ EOF
 			children = (
 				AA0002 /* AppDelegate.swift */,
 				AA0004 /* SceneDelegate.swift */,
+				AA0009 /* Info.plist */,
 			);
 			path = App;
 			sourceTree = "<group>";
