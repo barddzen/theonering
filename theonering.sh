@@ -110,7 +110,7 @@ echo ""
 echo -e "${BLUE}🔧 Updating iOS bootstrap script...${NC}"
 
 # Update iOS bootstrap
-sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}|g" ios/scripts/bootstrap.sh
+sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}/ios|g" ios/scripts/bootstrap.sh
 sed -i.bak "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" ios/scripts/bootstrap.sh
 sed -i.bak "s|{{IOS_PROJECT_NAME}}|${IOS_PROJECT_NAME}|g" ios/scripts/bootstrap.sh
 sed -i.bak "s|{{IOS_BUNDLE_ID}}|${IOS_BUNDLE_ID}|g" ios/scripts/bootstrap.sh
@@ -119,7 +119,7 @@ sed -i.bak "s|{{IOS_GITHUB_REPO}}|${IOS_GITHUB_REPO}|g" ios/scripts/bootstrap.sh
 echo -e "${BLUE}🔧 Updating Android bootstrap script...${NC}"
 
 # Update Android bootstrap
-sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}|g" android/scripts/bootstrap.sh
+sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}/android|g" android/scripts/bootstrap.sh
 sed -i.bak "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" android/scripts/bootstrap.sh
 sed -i.bak "s|{{ANDROID_PROJECT_NAME}}|${ANDROID_PROJECT_NAME}|g" android/scripts/bootstrap.sh
 sed -i.bak "s|{{ANDROID_PACKAGE}}|${ANDROID_PACKAGE}|g" android/scripts/bootstrap.sh
