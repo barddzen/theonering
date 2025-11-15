@@ -170,7 +170,7 @@ echo ""
 # Push iOS
 echo -e "${BLUE}📤 Pushing iOS to GitHub...${NC}"
 cd "ios"
-if git add . && git commit -m "Initial iOS project" && git push -u origin main 2>&1; then
+if git add . && git commit -m "Initial iOS project" && git push -u origin main --force 2>&1; then
     echo -e "${GREEN}✅ iOS pushed to GitHub${NC}"
     IOS_PUSHED=true
 else
@@ -184,7 +184,7 @@ cd ..
 echo ""
 echo -e "${BLUE}📤 Pushing Android to GitHub...${NC}"
 cd "android/$ANDROID_PROJECT_NAME"
-if git add . && git commit -m "Initial Android project" && git push -u origin main 2>&1; then
+if git add . && git commit -m "Initial Android project" && git push -u origin main --force 2>&1; then
     echo -e "${GREEN}✅ Android pushed to GitHub${NC}"
     ANDROID_PUSHED=true
 else
