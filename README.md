@@ -166,6 +166,21 @@ java -version  # Should show version 17
 
 The project was still created successfully - it just needs the right JDK to build.
 
+### Android build fails during theonering.sh
+
+**This is often expected on first run!** The build verification might fail due to:
+- Gradle downloading dependencies for the first time
+- Network/proxy configuration
+- JDK version
+
+**The project was still created successfully.** To verify:
+```bash
+cd FlightReady/android/FlightReadyAndroid
+./gradlew assembleDebug
+```
+
+If this succeeds, your Android project is fine! The initial failure was just a Gradle setup issue.
+
 ### "Directory already exists"
 
 You already have a project with that name:
