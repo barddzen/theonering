@@ -105,12 +105,6 @@ echo "  GitHub:         $ANDROID_GITHUB_REPO"
 echo ""
 echo -e "${YELLOW}⚠️  Make sure you created these GitHub repos FIRST!${NC}"
 echo ""
-read -p "Continue? (y/N) " -n 1 -r
-echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "${YELLOW}Cancelled${NC}"
-    exit 0
-fi
 
 echo ""
 echo -e "${BLUE}🔧 Updating iOS bootstrap script...${NC}"
