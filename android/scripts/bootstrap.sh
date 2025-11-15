@@ -1,15 +1,15 @@
 #!/bin/bash
-# Flight Ready Android - Project Bootstrap
+# {{PROJECT_NAME}} Android - Project Bootstrap
 # Creates complete Android Studio project structure
 
 set -e
 
-PROJECT_ROOT="/Users/davidyutzy/Development/FlightReady/android"
-APP_NAME="FlightReadyAndroid"
-PACKAGE_NAME="com.hookedonyutz.flightready.android"
-GITHUB_REMOTE="https://github.com/barddzen/FlightReadyAndroid.git"
+PROJECT_ROOT="{{PROJECT_ROOT}}/android"
+APP_NAME="{{ANDROID_PROJECT_NAME}}"
+PACKAGE_NAME="{{ANDROID_PACKAGE}}"
+GITHUB_REMOTE="{{ANDROID_GITHUB_REPO}}"
 
-echo "🚀 Flight Ready Android - Project Bootstrap"
+echo "🚀 {{PROJECT_NAME}} Android - Project Bootstrap"
 echo "============================================"
 echo "Creating Android project at: $PROJECT_ROOT"
 echo "Package: $PACKAGE_NAME"
@@ -28,9 +28,9 @@ fi
 echo "📁 Creating directory structure..."
 mkdir -p "$APP_NAME"/{app,gradle/wrapper}
 mkdir -p "$APP_NAME/app/src"/{main,test,androidTest}
-mkdir -p "$APP_NAME/app/src/main"/{java/com/hookedonyutz/flightready/android,res,assets}
-mkdir -p "$APP_NAME/app/src/main/java/com/hookedonyutz/flightready/android"/{models,services,ui,managers,utils}
-mkdir -p "$APP_NAME/app/src/main/java/com/hookedonyutz/flightready/android/ui"/{activities,fragments,adapters,views}
+mkdir -p "$APP_NAME/app/src/main"/{java/{{ANDROID_PACKAGE_PATH}},res,assets}
+mkdir -p "$APP_NAME/app/src/main/java/{{ANDROID_PACKAGE_PATH}}"/{models,services,ui,managers,utils}
+mkdir -p "$APP_NAME/app/src/main/java/{{ANDROID_PACKAGE_PATH}}/ui"/{activities,fragments,adapters,views}
 mkdir -p "$APP_NAME/app/src/main/res"/{layout,values,mipmap-anydpi-v26,drawable}
 
 echo "✅ Directories created"
@@ -128,7 +128,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FlightReady"
+rootProject.name = "{{PROJECT_NAME}}"
 include(":app")
 GRADLEEOF
 
@@ -142,11 +142,11 @@ plugins {
 }
 
 android {
-    namespace = "com.hookedonyutz.flightready.android"
+    namespace = "{{ANDROID_PACKAGE}}"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.hookedonyutz.flightready.android"
+        applicationId = "{{ANDROID_PACKAGE}}"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -286,13 +286,13 @@ cat > "$APP_NAME/app/src/main/AndroidManifest.xml" << 'MANIFESTEOF'
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <application
-        android:name=".FlightReadyApplication"
+        android:name=".{{PROJECT_NAME}}Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FlightReady">
+        android:theme="@style/Theme.{{PROJECT_NAME}}">
         
         <activity
             android:name=".ui.activities.MainActivity"
@@ -307,14 +307,14 @@ cat > "$APP_NAME/app/src/main/AndroidManifest.xml" << 'MANIFESTEOF'
 </manifest>
 MANIFESTEOF
 
-# Create FlightReadyApplication.kt
-echo "📝 Creating FlightReadyApplication.kt..."
-cat > "$APP_NAME/app/src/main/java/com/hookedonyutz/flightready/android/FlightReadyApplication.kt" << 'KTEOF'
-package com.hookedonyutz.flightready.android
+# Create {{PROJECT_NAME}}Application.kt
+echo "📝 Creating {{PROJECT_NAME}}Application.kt..."
+cat > "$APP_NAME/app/src/main/java/{{ANDROID_PACKAGE_PATH}}/{{PROJECT_NAME}}Application.kt" << 'KTEOF'
+package {{ANDROID_PACKAGE}}
 
 import android.app.Application
 
-class FlightReadyApplication : Application() {
+class {{PROJECT_NAME}}Application : Application() {
     
     override fun onCreate() {
         super.onCreate()
@@ -325,13 +325,13 @@ KTEOF
 
 # Create MainActivity.kt
 echo "📝 Creating MainActivity.kt..."
-cat > "$APP_NAME/app/src/main/java/com/hookedonyutz/flightready/android/ui/activities/MainActivity.kt" << 'KTEOF'
-package com.hookedonyutz.flightready.android.ui.activities
+cat > "$APP_NAME/app/src/main/java/{{ANDROID_PACKAGE_PATH}}/ui/activities/MainActivity.kt" << 'KTEOF'
+package {{ANDROID_PACKAGE}}.ui.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.hookedonyutz.flightready.android.R
-import com.hookedonyutz.flightready.android.databinding.ActivityMainBinding
+import {{ANDROID_PACKAGE}}.R
+import {{ANDROID_PACKAGE}}.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     
@@ -346,7 +346,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun setupUI() {
-        supportActionBar?.title = "Flight Ready"
+        supportActionBar?.title = "{{PROJECT_NAME}}"
     }
 }
 KTEOF
@@ -365,7 +365,7 @@ cat > "$APP_NAME/app/src/main/res/layout/activity_main.xml" << 'XMLEOF'
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Flight Ready"
+        android:text="{{PROJECT_NAME}}"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -379,7 +379,7 @@ XMLEOF
 echo "📝 Creating strings.xml..."
 cat > "$APP_NAME/app/src/main/res/values/strings.xml" << 'XMLEOF'
 <resources>
-    <string name="app_name">Flight Ready</string>
+    <string name="app_name">{{PROJECT_NAME}}</string>
 </resources>
 XMLEOF
 
@@ -402,7 +402,7 @@ XMLEOF
 echo "📝 Creating themes.xml..."
 cat > "$APP_NAME/app/src/main/res/values/themes.xml" << 'XMLEOF'
 <resources>
-    <style name="Theme.FlightReady" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.{{PROJECT_NAME}}" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">#2196F3</item>
         <item name="colorPrimaryDark">#1976D2</item>
         <item name="colorAccent">#FF9800</item>
