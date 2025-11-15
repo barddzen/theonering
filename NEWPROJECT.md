@@ -7,86 +7,54 @@ Before starting, you must:
    - `https://github.com/YOUR_USERNAME/YourProjectIOS`
    - `https://github.com/YOUR_USERNAME/YourProjectAndroid`
    
-   **Important:** Create these FIRST before running the script!
+   **Note:** It's okay if these repos have a README or license - the script will force push and overwrite them.
 
 ---
 
 ## The Workflow
 
-### Step 1: Create Project Directory
+### One Command Setup
 ```bash
 cd /Users/davidyutzy/Development
-mkdir MyNewProject
-cd MyNewProject
-```
 
-### Step 2: Pull TheOneRing Template
-```bash
-git clone https://github.com/barddzen/TheOneRing.git .
-rm -rf .git  # Remove TheOneRing's git history
-```
+curl -O https://raw.githubusercontent.com/barddzen/TheOneRing/main/theonering.sh
+chmod +x theonering.sh
 
-### Step 3: Run theonering.sh
-```bash
 ./theonering.sh \
   --project "MyNewProject" \
   --bundle "com.company.myapp" \
   --github-user "barddzen"
 ```
 
-**What this script does:**
-1. Validates your inputs
-2. Modifies bootstrap scripts with your project-specific values
-3. Runs iOS bootstrap → creates complete Xcode project
-4. Runs Android bootstrap → creates complete Android Studio project
-5. Initializes git repositories for both iOS and Android
-6. Sets up git remotes pointing to your GitHub repos
-7. Creates initial commits
-8. Attempts to push to GitHub
-
-### Step 4: If Push Fails (You Forgot to Create Repos)
-
-If the script fails at the push step, it will remind you:
-
-```
-❌ Push failed! Did you create the GitHub repositories?
-
-Please create:
-  - https://github.com/barddzen/MyNewProjectIOS
-  - https://github.com/barddzen/MyNewProjectAndroid
-
-Then run:
-  cd ios/MyNewProjectIOS && git push -u origin main
-  cd ../../android/MyNewProjectAndroid && git push -u origin main
-```
-
-After creating the repos, just run the push commands manually.
+**That's it!** The script will:
+1. Create `MyNewProject/` folder
+2. Clone the TheOneRing template
+3. Run iOS bootstrap → creates complete Xcode project
+4. Run Android bootstrap → creates complete Android Studio project
+5. Initialize git repositories for both platforms
+6. Commit and force push to GitHub
+7. Verify both projects build
 
 ---
 
 ## Complete Example
-
 ```bash
 # 1. Create repos on GitHub first:
 #    - https://github.com/barddzen/FlightReadyIOS
 #    - https://github.com/barddzen/FlightReadyAndroid
 
-# 2. Create project directory
+# 2. Run one command
 cd /Users/davidyutzy/Development
-mkdir FlightReady
-cd FlightReady
 
-# 3. Pull template
-git clone https://github.com/barddzen/TheOneRing.git .
-rm -rf .git
+curl -O https://raw.githubusercontent.com/barddzen/TheOneRing/main/theonering.sh
+chmod +x theonering.sh
 
-# 4. Run the magic script
 ./theonering.sh \
   --project "FlightReady" \
   --bundle "com.hookedonyutz.flightready" \
   --github-user "barddzen"
 
-# 5. Done! You now have:
+# 3. Done! You now have:
 #    - FlightReady/ios/FlightReadyIOS/ (buildable Xcode project)
 #    - FlightReady/android/FlightReadyAndroid/ (buildable Android project)
 #    - Both pushed to GitHub
@@ -97,56 +65,153 @@ rm -rf .git
 ## What Gets Created
 
 After running `theonering.sh`, your project structure will be:
-
 ```
 MyNewProject/
+├── bootstrap.sh                   # Universal bootstrap (used by theonering.sh)
+├── theonering.sh                  # The script you ran
 ├── ios/
-│   ├── MyNewProjectIOS/           # Complete Xcode project
-│   │   ├── MyNewProjectIOS.xcodeproj
-│   │   ├── MyNewProjectIOS/       # Source code
-│   │   └── .git/                  # Git repo (pushed to GitHub)
+│   ├── FlightReadyIOS.xcodeproj   # Complete Xcode project
+│   ├── FlightReadyIOS/            # Source code
+│   ├── .git/                      # Git repo (pushed to GitHub)
+│   ├── .gitignore
 │   ├── scripts/                   # Helper scripts
-│   └── templates/                 # CC prompt templates
+│   │   ├── commit.sh
+│   │   ├── status.sh
+│   │   ├── tag-daily.sh
+│   │   ├── tag-feature.sh
+│   │   └── push-all.sh
+│   └── templates/                 # Claude Code prompt templates
+│       ├── CC_PROMPT_TEMPLATE_SIMPLE_IOS.md
+│       ├── CC_PROMPT_TEMPLATE_MEDIUM_IOS.md
+│       └── CC_PROMPT_TEMPLATE_COMPLEX_IOS.md
 └── android/
-    ├── MyNewProjectAndroid/       # Complete Android project
+    ├── FlightReadyAndroid/        # Complete Android project
     │   ├── app/
     │   ├── build.gradle.kts
     │   ├── gradlew
-    │   └── .git/                  # Git repo (pushed to GitHub)
+    │   ├── .git/                  # Git repo (pushed to GitHub)
+    │   └── .gitignore
     ├── scripts/                   # Helper scripts
-    └── templates/                 # CC prompt templates
+    │   ├── commit.sh
+    │   ├── status.sh
+    │   ├── tag-daily.sh
+    │   ├── tag-feature.sh
+    │   └── push-all.sh
+    └── templates/                 # Claude Code prompt templates
+        ├── CC_PROMPT_TEMPLATE_SIMPLE_ANDROID.md
+        ├── CC_PROMPT_TEMPLATE_MEDIUM_ANDROID.md
+        └── CC_PROMPT_TEMPLATE_COMPLEX_ANDROID.md
 ```
 
 ---
 
 ## Troubleshooting
 
-### "Repository not found" error
+### "Repository not found" error during push
 - You forgot to create the GitHub repos first
-- Create them, then manually push:
-  ```bash
-  cd ios/MyNewProjectIOS
-  git push -u origin main
+- Create them at:
+  - `https://github.com/YOUR_USER/YourProjectIOS`
+  - `https://github.com/YOUR_USER/YourProjectAndroid`
+- Then manually push:
+```bash
+  cd MyNewProject/ios
+  git push -u origin main --force
   
-  cd ../../android/MyNewProjectAndroid
-  git push -u origin main
-  ```
+  cd ../android/MyNewProjectAndroid
+  git push -u origin main --force
+```
 
-### "Build failed" error
-- **iOS:** Open the Xcode project and set your development team in Signing & Capabilities
-- **Android:** Check that you have JDK 17 installed
+### "iOS build failed" or "needs team config"
+- **Expected!** Open the Xcode project and set your development team:
+  1. Open `MyNewProjectIOS.xcodeproj` in Xcode
+  2. Select project → Target → Signing & Capabilities
+  3. Select your team
+  4. Build should succeed
+
+### "Android build failed"
+- Check that you have JDK 17 installed:
+```bash
+  java -version  # Should show version 17
+```
+- The project was still created successfully, just needs JDK
+
+### "Directory already exists" error
+- You already have a project with that name
+- Either delete it or use a different name:
+```bash
+  rm -rf MyNewProject
+  # Or use a different name
+```
 
 ### Scripts not executable
+- Shouldn't happen, but if it does:
 ```bash
-chmod +x theonering.sh
-chmod +x ios/scripts/*.sh
-chmod +x android/scripts/*.sh
+  chmod +x theonering.sh
+  chmod +x bootstrap.sh
 ```
+
+---
+
+## Using the Helper Scripts
+
+After project creation, each platform has helper scripts in its `scripts/` folder:
+
+### iOS Helper Scripts
+```bash
+cd ios
+
+# Quick commit
+./scripts/commit.sh "Added new feature"
+
+# Check status
+./scripts/status.sh
+
+# Create date-based tag
+./scripts/tag-daily.sh
+
+# Create feature tag
+./scripts/tag-feature.sh "v1.0-beta"
+
+# Push everything (commits + tags)
+./scripts/push-all.sh
+```
+
+### Android Helper Scripts
+```bash
+cd android/FlightReadyAndroid
+
+# Same scripts available
+../scripts/commit.sh "Added new feature"
+../scripts/status.sh
+../scripts/tag-daily.sh
+../scripts/tag-feature.sh "v1.0-beta"
+../scripts/push-all.sh
+```
+
+---
+
+## Next Steps After Creation
+
+### iOS Development
+1. Open `MyNewProjectIOS.xcodeproj` in Xcode
+2. Set your development team (if you haven't already)
+3. Use Claude Code with the prompt templates in `ios/templates/`
+4. Build and run on simulator or device
+
+### Android Development
+1. Open `MyNewProjectAndroid/` in Android Studio
+2. Sync Gradle files
+3. Use Claude Code with the prompt templates in `android/templates/`
+4. Build and run on emulator or device
 
 ---
 
 ## Remember
 
-**ALWAYS create the GitHub repos BEFORE running `theonering.sh`!**
+- ✅ Create GitHub repos FIRST (but it's okay if they have a README)
+- ✅ The script handles everything - just run one command
+- ✅ Force push means you don't need to worry about repo contents
+- ✅ Helper scripts are included for easy git workflow
+- ✅ Claude Code templates are ready to use
 
-It saves time and prevents confusion at the end.
+**TheOneRing makes starting new projects trivial!** 🎉
