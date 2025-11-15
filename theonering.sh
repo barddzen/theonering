@@ -144,8 +144,8 @@ cd ios
 
 echo ""
 echo -e "${BLUE}🔨 Verifying iOS build...${NC}"
-cd "${IOS_PROJECT_NAME}"
-if xcodebuild -scheme "$IOS_PROJECT_NAME" -quiet clean build 2>&1 | grep -q "BUILD SUCCEEDED"; then
+
+if xcodebuild -project "${IOS_PROJECT_NAME}.xcodeproj" -scheme "$IOS_PROJECT_NAME" -quiet clean build 2>&1 | grep -q "BUILD SUCCEEDED"; then
     echo -e "${GREEN}✅ iOS build successful${NC}"
     IOS_SUCCESS=true
 else
@@ -153,7 +153,6 @@ else
     echo -e "${YELLOW}   Open ${IOS_PROJECT_NAME}.xcodeproj and set your team${NC}"
     IOS_SUCCESS=false
 fi
-cd ..
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
