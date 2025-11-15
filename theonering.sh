@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: ./theonering.sh --project <name> --bundle <bundle-id-base> --github-user <username>"
             echo ""
             echo "Example:"
-            echo "  ./theonering.sh --project FlightReady --bundle com.hookedonyutz.flightready --github-user barddzen"
+            echo "  ./theonering.sh --project MyApp --bundle com.company.myapp --github-user yourusername"
             echo ""
             echo "IMPORTANT: Create GitHub repos FIRST:"
             echo "  - https://github.com/YOUR_USER/YourProjectIOS"
@@ -55,7 +55,7 @@ if [ -z "$PROJECT_NAME" ] || [ -z "$BUNDLE_BASE" ] || [ -z "$GITHUB_USER" ]; the
     echo "Usage: ./theonering.sh --project <name> --bundle <bundle-id-base> --github-user <username>"
     echo ""
     echo "Example:"
-    echo "  ./theonering.sh --project FlightReady --bundle com.hookedonyutz.flightready --github-user barddzen"
+    echo "  ./theonering.sh --project MyApp --bundle com.company.myapp --github-user yourusername"
     exit 1
 fi
 
@@ -67,6 +67,7 @@ ANDROID_PACKAGE="${BUNDLE_BASE}.android"
 PACKAGE_PATH=$(echo "$BUNDLE_BASE" | tr '.' '/')
 IOS_GITHUB_REPO="https://github.com/${GITHUB_USER}/${IOS_PROJECT_NAME}.git"
 ANDROID_GITHUB_REPO="https://github.com/${GITHUB_USER}/${ANDROID_PROJECT_NAME}.git"
+PROJECT_ROOT="$(pwd)"
 
 # Create project directory
 if [ -d "$PROJECT_NAME" ]; then
@@ -77,12 +78,9 @@ fi
 mkdir "$PROJECT_NAME"
 cd "$PROJECT_NAME"
 
-# Set PROJECT_ROOT AFTER cd into the directory
-PROJECT_ROOT="$(pwd)"
-
 # Download template
 echo -e "${BLUE}📦 Downloading template...${NC}"
-git clone https://github.com/barddzen/TheOneRing.git .
+git clone https://github.com/${GITHUB_USER}/TheOneRing.git .
 rm -rf .git  # Remove TheOneRing's git history
 echo -e "${GREEN}✅ Template ready${NC}"
 echo ""
@@ -107,26 +105,32 @@ echo "  GitHub:         $ANDROID_GITHUB_REPO"
 echo ""
 echo -e "${YELLOW}⚠️  Make sure you created these GitHub repos FIRST!${NC}"
 echo ""
+read -p "Continue? (y/N) " -n 1 -r
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${YELLOW}Cancelled${NC}"
+    exit 0
+fi
 
 echo ""
 echo -e "${BLUE}🔧 Updating iOS bootstrap script...${NC}"
 
 # Update iOS bootstrap
-sed -i.bak "s|FlightReady|${PROJECT_NAME}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|FlightReadyIOS|${IOS_PROJECT_NAME}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|com.hookedonyutz.flightready.ios|${IOS_BUNDLE_ID}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|barddzen/FlightReadyIOS|${GITHUB_USER}/${IOS_PROJECT_NAME}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|/Users/davidyutzy/Development/FlightReady|${PROJECT_ROOT}|g" ios/scripts/bootstrap.sh
+sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}|g" ios/scripts/bootstrap.sh
+sed -i.bak "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" ios/scripts/bootstrap.sh
+sed -i.bak "s|{{IOS_PROJECT_NAME}}|${IOS_PROJECT_NAME}|g" ios/scripts/bootstrap.sh
+sed -i.bak "s|{{IOS_BUNDLE_ID}}|${IOS_BUNDLE_ID}|g" ios/scripts/bootstrap.sh
+sed -i.bak "s|{{IOS_GITHUB_REPO}}|${IOS_GITHUB_REPO}|g" ios/scripts/bootstrap.sh
 
 echo -e "${BLUE}🔧 Updating Android bootstrap script...${NC}"
 
-# Update Android bootstrap  
-sed -i.bak "s|FlightReady|${PROJECT_NAME}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|FlightReadyAndroid|${ANDROID_PROJECT_NAME}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|com.hookedonyutz.flightready.android|${ANDROID_PACKAGE}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|com/hookedonyutz/flightready/android|${PACKAGE_PATH}/android|g" android/scripts/bootstrap.sh
-sed -i.bak "s|barddzen/FlightReadyAndroid|${GITHUB_USER}/${ANDROID_PROJECT_NAME}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|/Users/davidyutzy/Development/FlightReady|${PROJECT_ROOT}|g" android/scripts/bootstrap.sh
+# Update Android bootstrap
+sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}|g" android/scripts/bootstrap.sh
+sed -i.bak "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" android/scripts/bootstrap.sh
+sed -i.bak "s|{{ANDROID_PROJECT_NAME}}|${ANDROID_PROJECT_NAME}|g" android/scripts/bootstrap.sh
+sed -i.bak "s|{{ANDROID_PACKAGE}}|${ANDROID_PACKAGE}|g" android/scripts/bootstrap.sh
+sed -i.bak "s|{{ANDROID_PACKAGE_PATH}}|${PACKAGE_PATH}|g" android/scripts/bootstrap.sh
+sed -i.bak "s|{{ANDROID_GITHUB_REPO}}|${ANDROID_GITHUB_REPO}|g" android/scripts/bootstrap.sh
 
 # Clean up backup files
 rm -f ios/scripts/*.bak android/scripts/*.bak
