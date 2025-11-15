@@ -67,7 +67,6 @@ ANDROID_PACKAGE="${BUNDLE_BASE}.android"
 PACKAGE_PATH=$(echo "$BUNDLE_BASE" | tr '.' '/')
 IOS_GITHUB_REPO="https://github.com/${GITHUB_USER}/${IOS_PROJECT_NAME}.git"
 ANDROID_GITHUB_REPO="https://github.com/${GITHUB_USER}/${ANDROID_PROJECT_NAME}.git"
-PROJECT_ROOT="$(pwd)"
 
 # Create project directory
 if [ -d "$PROJECT_NAME" ]; then
@@ -77,6 +76,9 @@ fi
 
 mkdir "$PROJECT_NAME"
 cd "$PROJECT_NAME"
+
+# Set PROJECT_ROOT AFTER cd into the directory
+PROJECT_ROOT="$(pwd)"
 
 # Download template
 echo -e "${BLUE}📦 Downloading template...${NC}"
