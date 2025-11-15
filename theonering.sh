@@ -1,6 +1,5 @@
 #!/bin/bash
 # TheOneRing - Universal iOS + Android Project Generator
-# Creates complete dual-platform mobile projects
 
 set -e
 
@@ -34,7 +33,7 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: ./theonering.sh --project <name> --bundle <bundle-id-base> --github-user <username>"
             echo ""
             echo "Example:"
-            echo "  ./theonering.sh --project MyApp --bundle com.company.myapp --github-user yourusername"
+            echo "  ./theonering.sh --project FlightReady --bundle com.hookedonyutz.flightready --github-user barddzen"
             echo ""
             echo "IMPORTANT: Create GitHub repos FIRST:"
             echo "  - https://github.com/YOUR_USER/YourProjectIOS"
@@ -53,9 +52,6 @@ if [ -z "$PROJECT_NAME" ] || [ -z "$BUNDLE_BASE" ] || [ -z "$GITHUB_USER" ]; the
     echo -e "${RED}❌ Missing required arguments${NC}"
     echo ""
     echo "Usage: ./theonering.sh --project <name> --bundle <bundle-id-base> --github-user <username>"
-    echo ""
-    echo "Example:"
-    echo "  ./theonering.sh --project MyApp --bundle com.company.myapp --github-user yourusername"
     exit 1
 fi
 
@@ -64,10 +60,8 @@ IOS_PROJECT_NAME="${PROJECT_NAME}IOS"
 ANDROID_PROJECT_NAME="${PROJECT_NAME}Android"
 IOS_BUNDLE_ID="${BUNDLE_BASE}.ios"
 ANDROID_PACKAGE="${BUNDLE_BASE}.android"
-PACKAGE_PATH=$(echo "$BUNDLE_BASE" | tr '.' '/')
 IOS_GITHUB_REPO="https://github.com/${GITHUB_USER}/${IOS_PROJECT_NAME}.git"
 ANDROID_GITHUB_REPO="https://github.com/${GITHUB_USER}/${ANDROID_PROJECT_NAME}.git"
-PROJECT_ROOT="$(pwd)"
 
 # Create project directory
 if [ -d "$PROJECT_NAME" ]; then
@@ -77,11 +71,12 @@ fi
 
 mkdir "$PROJECT_NAME"
 cd "$PROJECT_NAME"
+PROJECT_ROOT="$(pwd)"
 
 # Download template
 echo -e "${BLUE}📦 Downloading template...${NC}"
 git clone https://github.com/${GITHUB_USER}/TheOneRing.git .
-rm -rf .git  # Remove TheOneRing's git history
+rm -rf .git
 echo -e "${GREEN}✅ Template ready${NC}"
 echo ""
 
@@ -106,45 +101,24 @@ echo ""
 echo -e "${YELLOW}⚠️  Make sure you created these GitHub repos FIRST!${NC}"
 echo ""
 
-echo ""
-echo -e "${BLUE}🔧 Updating iOS bootstrap script...${NC}"
+# Make bootstrap executable
+chmod +x bootstrap.sh
 
-# Update iOS bootstrap
-sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}/ios|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|{{IOS_PROJECT_NAME}}|${IOS_PROJECT_NAME}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|{{IOS_BUNDLE_ID}}|${IOS_BUNDLE_ID}|g" ios/scripts/bootstrap.sh
-sed -i.bak "s|{{IOS_GITHUB_REPO}}|${IOS_GITHUB_REPO}|g" ios/scripts/bootstrap.sh
-
-echo -e "${BLUE}🔧 Updating Android bootstrap script...${NC}"
-
-# Update Android bootstrap
-sed -i.bak "s|{{PROJECT_ROOT}}|${PROJECT_ROOT}/android|g" android/scripts/bootstrap.sh
-sed -i.bak "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|{{ANDROID_PROJECT_NAME}}|${ANDROID_PROJECT_NAME}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|{{ANDROID_PACKAGE}}|${ANDROID_PACKAGE}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|{{ANDROID_PACKAGE_PATH}}|${PACKAGE_PATH}|g" android/scripts/bootstrap.sh
-sed -i.bak "s|{{ANDROID_GITHUB_REPO}}|${ANDROID_GITHUB_REPO}|g" android/scripts/bootstrap.sh
-
-# Clean up backup files
-rm -f ios/scripts/*.bak android/scripts/*.bak
-
-# Make scripts executable
-chmod +x ios/scripts/*.sh
-chmod +x android/scripts/*.sh
-
-echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}         Building iOS Project            ${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-cd ios
-./scripts/bootstrap.sh
+./bootstrap.sh \
+  --platform ios \
+  --project-name "$PROJECT_NAME" \
+  --bundle "$IOS_BUNDLE_ID" \
+  --github-repo "$IOS_GITHUB_REPO" \
+  --project-root "$PROJECT_ROOT"
 
 echo ""
 echo -e "${BLUE}🔨 Verifying iOS build...${NC}"
-
+cd ios
 if xcodebuild -project "${IOS_PROJECT_NAME}.xcodeproj" -scheme "$IOS_PROJECT_NAME" -quiet clean build 2>&1 | grep -q "BUILD SUCCEEDED"; then
     echo -e "${GREEN}✅ iOS build successful${NC}"
     IOS_SUCCESS=true
@@ -153,6 +127,7 @@ else
     echo -e "${YELLOW}   Open ${IOS_PROJECT_NAME}.xcodeproj and set your team${NC}"
     IOS_SUCCESS=false
 fi
+cd ..
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -160,17 +135,28 @@ echo -e "${BLUE}        Building Android Project         ${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-cd ../android
-./scripts/bootstrap.sh
+./bootstrap.sh \
+  --platform android \
+  --project-name "$PROJECT_NAME" \
+  --package "$ANDROID_PACKAGE" \
+  --github-repo "$ANDROID_GITHUB_REPO" \
+  --project-root "$PROJECT_ROOT"
 
 echo ""
 echo -e "${BLUE}🔨 Verifying Android build...${NC}"
-cd "${ANDROID_PROJECT_NAME}"
-if ./gradlew assembleDebug --quiet 2>&1 | grep -q "BUILD SUCCESSFUL"; then
-    echo -e "${GREEN}✅ Android build successful${NC}"
-    ANDROID_SUCCESS=true
+cd android
+if [ -d "$ANDROID_PROJECT_NAME" ] && [ -f "$ANDROID_PROJECT_NAME/gradlew" ]; then
+    cd "$ANDROID_PROJECT_NAME"
+    if ./gradlew assembleDebug --quiet 2>&1 | grep -q "BUILD SUCCESSFUL"; then
+        echo -e "${GREEN}✅ Android build successful${NC}"
+        ANDROID_SUCCESS=true
+    else
+        echo -e "${RED}❌ Android build failed${NC}"
+        ANDROID_SUCCESS=false
+    fi
+    cd ..
 else
-    echo -e "${RED}❌ Android build failed${NC}"
+    echo -e "${RED}❌ Android project not found${NC}"
     ANDROID_SUCCESS=false
 fi
 cd ..
@@ -181,10 +167,10 @@ echo -e "${BLUE}          Pushing to GitHub             ${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Try to push iOS
+# Push iOS
 echo -e "${BLUE}📤 Pushing iOS to GitHub...${NC}"
-cd "${PROJECT_ROOT}/ios/${IOS_PROJECT_NAME}"
-if git push -u origin main 2>&1; then
+cd "ios"
+if git add . && git commit -m "Initial iOS project" && git push -u origin main 2>&1; then
     echo -e "${GREEN}✅ iOS pushed to GitHub${NC}"
     IOS_PUSHED=true
 else
@@ -192,12 +178,13 @@ else
     echo -e "${YELLOW}Did you create https://github.com/${GITHUB_USER}/${IOS_PROJECT_NAME} ?${NC}"
     IOS_PUSHED=false
 fi
+cd ..
 
-# Try to push Android
+# Push Android
 echo ""
 echo -e "${BLUE}📤 Pushing Android to GitHub...${NC}"
-cd "${PROJECT_ROOT}/android/${ANDROID_PROJECT_NAME}"
-if git push -u origin main 2>&1; then
+cd "android/$ANDROID_PROJECT_NAME"
+if git add . && git commit -m "Initial Android project" && git push -u origin main 2>&1; then
     echo -e "${GREEN}✅ Android pushed to GitHub${NC}"
     ANDROID_PUSHED=true
 else
@@ -205,6 +192,7 @@ else
     echo -e "${YELLOW}Did you create https://github.com/${GITHUB_USER}/${ANDROID_PROJECT_NAME} ?${NC}"
     ANDROID_PUSHED=false
 fi
+cd ../..
 
 # Summary
 echo ""
@@ -239,7 +227,7 @@ else
     echo -e "${RED}❌ Android: Not pushed${NC}"
 fi
 
-# If push failed, show manual instructions
+# Manual push instructions if needed
 if [ "$IOS_PUSHED" = false ] || [ "$ANDROID_PUSHED" = false ]; then
     echo ""
     echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -256,12 +244,12 @@ if [ "$IOS_PUSHED" = false ] || [ "$ANDROID_PUSHED" = false ]; then
     echo ""
     echo "Then push manually:"
     if [ "$IOS_PUSHED" = false ]; then
-        echo "  cd ${PROJECT_ROOT}/ios/${IOS_PROJECT_NAME}"
+        echo "  cd ios"
         echo "  git push -u origin main"
         echo ""
     fi
     if [ "$ANDROID_PUSHED" = false ]; then
-        echo "  cd ${PROJECT_ROOT}/android/${ANDROID_PROJECT_NAME}"
+        echo "  cd android/${ANDROID_PROJECT_NAME}"
         echo "  git push -u origin main"
     fi
 fi
@@ -269,4 +257,3 @@ fi
 echo ""
 echo -e "${GREEN}🎉 Project ${PROJECT_NAME} created!${NC}"
 echo ""
-cd "$PROJECT_ROOT"
