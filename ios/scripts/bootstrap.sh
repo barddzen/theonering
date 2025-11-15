@@ -1,16 +1,16 @@
 #!/bin/bash
-# Flight Ready iOS - Project Bootstrap
+# {{PROJECT_NAME}} iOS - Project Bootstrap
 # Creates complete Xcode project structure
 
 set -e
 
-PROJECT_ROOT="/Users/davidyutzy/Development/FlightReady/ios"
-APP_NAME="FlightReadyIOS"
-BUNDLE_ID="com.hookedonyutz.flightready.ios"
+PROJECT_ROOT="{{PROJECT_ROOT}}/ios"
+APP_NAME="{{IOS_PROJECT_NAME}}"
+BUNDLE_ID="{{IOS_BUNDLE_ID}}"
 DEPLOYMENT_TARGET="15.0"
-GITHUB_REMOTE="https://github.com/barddzen/FlightReadyIOS.git"
+GITHUB_REMOTE="{{IOS_GITHUB_REPO}}"
 
-echo "🚀 Flight Ready iOS - Project Bootstrap"
+echo "🚀 {{PROJECT_NAME}} iOS - Project Bootstrap"
 echo "========================================"
 echo "Creating Xcode project at: $PROJECT_ROOT"
 echo "Bundle ID: $BUNDLE_ID"
@@ -77,7 +77,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Setup initial view controller
         let mainViewController = UIViewController()
         mainViewController.view.backgroundColor = .systemBackground
-        mainViewController.title = "Flight Ready"
+        mainViewController.title = "{{PROJECT_NAME}}"
         
         let navigationController = UINavigationController(rootViewController: mainViewController)
         window?.rootViewController = navigationController
@@ -161,9 +161,9 @@ cat > "$APP_NAME/App/Info.plist" << EOF
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Flight Ready needs your location to check airspace restrictions and weather conditions for drone flights.</string>
+    <string>{{PROJECT_NAME}} needs your location to check airspace restrictions and weather conditions for drone flights.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Flight Ready uses your location to monitor saved flight locations and send you alerts about changing conditions.</string>
+    <string>{{PROJECT_NAME}} uses your location to monitor saved flight locations and send you alerts about changing conditions.</string>
     <key>UIBackgroundModes</key>
     <array>
         <string>location</string>
@@ -195,7 +195,7 @@ cat > "$APP_NAME/Resources/LaunchScreen.storyboard" << 'EOF'
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Flight Ready" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-Yh-RWb">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{{PROJECT_NAME}}" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-Yh-RWb">
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <nil key="highlightedColor"/>
