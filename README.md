@@ -21,31 +21,27 @@ TheOneRing creates complete, buildable iOS and Android projects with:
    - `https://github.com/YOUR_USERNAME/YourProjectIOS`
    - `https://github.com/YOUR_USERNAME/YourProjectAndroid`
 
-### Usage
-
+### One-Command Setup
 ```bash
-# 1. Create project directory
-mkdir MyNewProject
-cd MyNewProject
+cd /Users/yourname/Development
 
-# 2. Pull TheOneRing template
-git clone https://github.com/barddzen/TheOneRing.git .
-rm -rf .git
+curl -O https://raw.githubusercontent.com/barddzen/TheOneRing/main/theonering.sh
+chmod +x theonering.sh
 
-# 3. Run the generator
 ./theonering.sh \
   --project "MyNewProject" \
   --bundle "com.company.myapp" \
   --github-user "YOUR_USERNAME"
 ```
 
-### Example
+**That's it!** The script creates everything, builds both platforms, and pushes to GitHub.
 
+### Example
 ```bash
-mkdir FlightReady
-cd FlightReady
-git clone https://github.com/barddzen/TheOneRing.git .
-rm -rf .git
+cd /Users/davidyutzy/Development
+
+curl -O https://raw.githubusercontent.com/barddzen/TheOneRing/main/theonering.sh
+chmod +x theonering.sh
 
 ./theonering.sh \
   --project "FlightReady" \
@@ -54,69 +50,161 @@ rm -rf .git
 ```
 
 ## What Gets Created
-
 ```
 YourProject/
+├── bootstrap.sh                     # Universal bootstrap script
+├── theonering.sh                    # Generator script
 ├── ios/
-│   ├── YourProjectIOS/              # Complete Xcode project
-│   │   ├── YourProjectIOS.xcodeproj
-│   │   └── YourProjectIOS/          # Source code
-│   ├── scripts/                     # Helper scripts (commit, status, etc.)
+│   ├── YourProjectIOS.xcodeproj     # Complete Xcode project
+│   ├── YourProjectIOS/              # Source code
+│   ├── .git/                        # Pushed to GitHub
+│   ├── scripts/                     # Helper scripts
+│   │   ├── commit.sh
+│   │   ├── status.sh
+│   │   ├── tag-daily.sh
+│   │   ├── tag-feature.sh
+│   │   └── push-all.sh
 │   └── templates/                   # Claude Code prompts
+│       ├── CC_PROMPT_TEMPLATE_SIMPLE_IOS.md
+│       ├── CC_PROMPT_TEMPLATE_MEDIUM_IOS.md
+│       └── CC_PROMPT_TEMPLATE_COMPLEX_IOS.md
 └── android/
     ├── YourProjectAndroid/          # Complete Android project
     │   ├── app/
     │   ├── build.gradle.kts
-    │   └── gradlew
+    │   ├── gradlew
+    │   └── .git/                    # Pushed to GitHub
     ├── scripts/                     # Helper scripts
     └── templates/                   # Claude Code prompts
 ```
 
+## How It Works
+
+1. **Downloads template** - Clones TheOneRing into your project folder
+2. **Runs bootstrap** - Calls `bootstrap.sh` twice (once for iOS, once for Android) with your project details
+3. **Builds projects** - Verifies both Xcode and Android projects compile
+4. **Pushes to GitHub** - Commits and force pushes to your repos
+
+**No placeholders. No sed replacements. Just clean argument passing.**
+
 ## Helper Scripts
 
-Both iOS and Android have these helper scripts in their `scripts/` folders:
+Both iOS and Android include helper scripts for common git operations:
 
-- `commit.sh "message"` - Quick commit with message
-- `status.sh` - Show git status and recent commits
-- `tag-daily.sh` - Create date-based tag (e.g., 2024-11-15)
-- `tag-feature.sh "name"` - Create feature tag
-- `push-all.sh` - Push commits and tags to GitHub
+### iOS
+```bash
+cd ios
+
+# Quick commit
+./scripts/commit.sh "Added feature"
+
+# Check status  
+./scripts/status.sh
+
+# Create date tag (e.g., 2024-11-15)
+./scripts/tag-daily.sh
+
+# Create feature tag
+./scripts/tag-feature.sh "v1.0-beta"
+
+# Push everything
+./scripts/push-all.sh
+```
+
+### Android
+```bash
+cd android/YourProjectAndroid
+
+# Same commands, relative path
+../scripts/commit.sh "Added feature"
+../scripts/status.sh
+../scripts/tag-daily.sh
+../scripts/tag-feature.sh "v1.0-beta"
+../scripts/push-all.sh
+```
+
+## Claude Code Integration
+
+Each platform includes ready-to-use prompt templates:
+
+- `CC_PROMPT_TEMPLATE_SIMPLE_*.md` - For small, focused tasks
+- `CC_PROMPT_TEMPLATE_MEDIUM_*.md` - For moderate complexity features
+- `CC_PROMPT_TEMPLATE_COMPLEX_*.md` - For major architectural work
+
+These templates understand your project structure and include best practices for mobile development.
 
 ## Troubleshooting
 
 ### "Repository not found" when pushing
 
-You forgot to create the GitHub repos first! Create them:
+You forgot to create the GitHub repos! Create them:
 - `https://github.com/YOUR_USER/YourProjectIOS`
 - `https://github.com/YOUR_USER/YourProjectAndroid`
 
-Then push manually:
+Then manually push:
 ```bash
-cd ios/YourProjectIOS
-git push -u origin main
+cd YourProject/ios
+git push -u origin main --force
 
-cd ../../android/YourProjectAndroid
-git push -u origin main
+cd ../android/YourProjectAndroid
+git push -u origin main --force
 ```
 
-### iOS build fails
+### iOS build fails or "needs team config"
 
-Open the Xcode project and set your development team:
+**This is normal!** Open the Xcode project and set your development team:
 1. Open `YourProjectIOS.xcodeproj` in Xcode
 2. Select project → Target → Signing & Capabilities
 3. Select your team
 
 ### Android build fails
 
-Make sure you have JDK 17 installed:
+Check you have JDK 17:
 ```bash
 java -version  # Should show version 17
 ```
 
+The project was still created successfully - it just needs the right JDK to build.
+
+### "Directory already exists"
+
+You already have a project with that name:
+```bash
+rm -rf YourProject  # Delete it
+# Or use a different name
+```
+
+## Architecture
+
+TheOneRing uses a simple, argument-based approach:
+```bash
+theonering.sh
+    ↓
+    Calls: bootstrap.sh --platform ios --project-name "..." --bundle "..." 
+    ↓
+    Calls: bootstrap.sh --platform android --project-name "..." --package "..."
+    ↓
+    Done!
+```
+
+No templates with placeholders. No sed replacements. Just one bootstrap script that handles both platforms based on arguments.
+
 ## Full Documentation
 
-See [NEWPROJECT.md](NEWPROJECT.md) for complete step-by-step instructions.
+See [NEWPROJECT.md](NEWPROJECT.md) for complete step-by-step instructions and detailed examples.
+
+## Why TheOneRing?
+
+- **Fast** - New project in under 2 minutes
+- **Complete** - Both platforms, fully configured
+- **Clean** - No hardcoded values, just arguments
+- **Integrated** - Git repos, helper scripts, Claude Code templates included
+- **Simple** - One command does everything
 
 ## License
 
 MIT - Use this however you want for your projects!
+
+---
+
+**One script to rule them all.** 🎯
