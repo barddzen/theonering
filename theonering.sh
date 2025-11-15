@@ -69,6 +69,22 @@ IOS_GITHUB_REPO="https://github.com/${GITHUB_USER}/${IOS_PROJECT_NAME}.git"
 ANDROID_GITHUB_REPO="https://github.com/${GITHUB_USER}/${ANDROID_PROJECT_NAME}.git"
 PROJECT_ROOT="$(pwd)"
 
+# Create project directory
+if [ -d "$PROJECT_NAME" ]; then
+    echo -e "${RED}❌ Directory $PROJECT_NAME already exists!${NC}"
+    exit 1
+fi
+
+mkdir "$PROJECT_NAME"
+cd "$PROJECT_NAME"
+
+# Download template
+echo -e "${BLUE}📦 Downloading template...${NC}"
+git clone https://github.com/barddzen/TheOneRing.git .
+rm -rf .git  # Remove TheOneRing's git history
+echo -e "${GREEN}✅ Template ready${NC}"
+echo ""
+
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}       THE ONE RING - Project Setup      ${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
