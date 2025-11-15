@@ -135,6 +135,21 @@ MyNewProject/
 ```
 - The project was still created successfully, just needs JDK
 
+### Android build fails during theonering.sh
+
+**This is often expected on first run!** The build verification might fail due to:
+- Gradle downloading dependencies for the first time
+- Network/proxy configuration
+- JDK version
+
+**The project was still created successfully.** To verify:
+```bash
+cd FlightReady/android/FlightReadyAndroid
+./gradlew assembleDebug
+```
+
+If this succeeds, your Android project is fine! The initial failure was just a Gradle setup issue.
+
 ### "Directory already exists" error
 - You already have a project with that name
 - Either delete it or use a different name:
